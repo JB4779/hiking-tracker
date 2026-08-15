@@ -21,7 +21,21 @@ def main():
 
         hikes.append(hike)
         print("Hike logged!")
-    
+
+    def view_hikes():
+        if not hikes:
+            print("No hikes logged yet.")
+            return
+        
+        for hike in hikes:
+            print(f"Date: {hike['date']}")
+            print(f"Trail: {hike['trail']}")
+            print(f"Distance: {hike['distance']} miles")
+            print(f"Elevation Gain: {hike['elevation_gain']} feet")
+            print(f"Total Time: {hike['total_time']} minutes")
+            print(f"Pack Weight: {hike['pack_weight']} lbs")
+            print()
+
     while True:
         print("\nHIKING TRACKER")
         print("1. Log a hike")
@@ -33,6 +47,8 @@ def main():
 
         if choice == "1":
             log_hike()
+        elif choice == "2":
+            view_hikes()
         elif choice == "4":
             print("Goodbye!")
             break   
