@@ -1,0 +1,26 @@
+[
+    {
+        "date": "2/23/2025",
+        "trail": "Wally Loop",
+        "distance": 1.89,
+        "elevation_gain": 131,
+        "total_time": 46,
+        "pack_weight": 0.0
+    },
+    {
+        "date": "9/22/2025",
+        "trail": "Crystal Cove Loop",
+        "distance": 8.03,
+        "elevation_gain": 1132,
+        "total_time": 230,
+        "pack_weight": 1.5
+    },
+    {
+        "date": "4/5/2025",
+        "trail": "Crystal Cove Big Loop",
+        "distance": 11.23,
+        "elevation_gain": 1444,
+        "total_time": 253,
+        "pack_weight": 15.0
+    }
+]
