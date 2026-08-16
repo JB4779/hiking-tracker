@@ -30,7 +30,8 @@ from input_utils import (
 
 from hike_statistics import (
     calculate_pace,
-    format_pace
+    format_pace,
+    calculate_elevation_per_mile
 )
 
 # Hiking Functions
@@ -68,6 +69,29 @@ def view_hikes(hikes):
         print(
             f"{index}. {hike['trail']} - {hike['date']} - {hike['distance']:.2f} miles - {format_pace(pace)} / mile"
         )
+
+def view_hike_details(hikes):
+    if not hikes:
+        print("No hikes logged yet.")
+        return
+    
+    view_hikes(hikes)
+    index = get_int("Enter the number of the hike to view details: ") - 1
+
+    if 0 <= index < len(hikes):
+        hike = hikes[index]
+        pace = calculate_pace(hike["total_time"], hike["distance"])
+        elevation_per_mile = calculate_elevation_per_mile(hike["elevation_gain"], hike["distance"])
+        print(f"\nDetails for {hike['trail']} - {hike['date']}:")
+        print(f"Distance: {hike['distance']:.2f} miles")
+        print(f"Elevation Gain: {hike['elevation_gain']} feet")
+        print(f"Elevation per Mile: {elevation_per_mile:.0f} feet/mile")
+        print(f"Total Time: {format_time(hike['total_time'])}")
+        print(f"Pace: {format_pace(pace)} / mile")
+       
+        print(f"Pack Weight: {hike['pack_weight']} lbs")
+    else:
+        print("Invalid hike number.")
 
 def delete_hike(hikes):
     if not hikes:

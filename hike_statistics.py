@@ -40,3 +40,8 @@ def format_pace(pace):
     minutes = int(pace % 60)
     seconds = round((pace - minutes) * 60)
     return f"{minutes}:{seconds:02}"
+
+def calculate_elevation_per_mile(total_elevation_gain, total_distance):
+    if total_distance == 0:
+        return 0
+    return total_elevation_gain / total_distance
