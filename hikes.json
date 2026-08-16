@@ -1,16 +1,8 @@
 [
     {
-        "date": "2/23/2025",
-        "trail": "Wally Loop",
-        "distance": 1.89,
-        "elevation_gain": 131,
-        "total_time": 46,
-        "pack_weight": 0.0
-    },
-    {
         "date": "9/22/2025",
         "trail": "Crystal Cove Loop",
-        "distance": 8.03,
+        "distance": 8.04,
         "elevation_gain": 1132,
         "total_time": 230,
         "pack_weight": 1.5
@@ -22,5 +14,21 @@
         "elevation_gain": 1444,
         "total_time": 253,
         "pack_weight": 15.0
+    },
+    {
+        "date": "4/13/2025",
+        "trail": "NIX - Serrano Ridge - Laural Cyn",
+        "distance": 8.06,
+        "elevation_gain": 1129,
+        "total_time": 205,
+        "pack_weight": 15.0
+    },
+    {
+        "date": "2/23/2025",
+        "trail": "Wally's Loop",
+        "distance": 1.89,
+        "elevation_gain": 132,
+        "total_time": 48,
+        "pack_weight": 5.5
     }
 ]
