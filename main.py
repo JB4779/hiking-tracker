@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 DATA_FILE = "hikes.json"
 
@@ -37,6 +38,62 @@ def get_optional_int(prompt, current_value):
         except ValueError:
             print("Invalid input. Please enter an integer.")
 
+def get_date(prompt):
+    while True:
+        date_str = input(prompt)
+        try:
+            datetime.strptime(date_str, "%Y-%m-%d")
+            return date_str
+        except ValueError:
+            print("Invalid date format. Please use YYYY-MM-DD.")
+
+def get_optional_date(prompt, current_value):
+    while True:
+        date_str = input(prompt)
+        if date_str == "":
+            return current_value
+        try: 
+            datetime.strptime(date_str, "%Y-%m-%d")
+            return date_str
+        except ValueError:
+            print("Invalid date format. Please use YYYY-MM-DD.")
+
+def get_time(prompt):
+    while True:
+        time_str = input(prompt)
+
+        try:
+            hours, minutes = map(int, time_str.split(":"))
+            
+            if minutes < 0 or minutes > 59 or hours < 0:
+                raise ValueError
+            
+            return hours * 60 + minutes
+        
+        except ValueError:
+            print("Invalid time format. Please use HH:MM.")
+
+def get_optional_time(prompt, current_value):
+    while True:
+        time_str = input(prompt)
+        if time_str == "":
+            return current_value
+        try:
+            hours, minutes = map(int, time_str.split(":"))
+
+            if minutes < 0 or minutes > 59 or hours < 0:
+                raise ValueError
+
+            return hours * 60 + minutes
+
+        except ValueError:
+            print("Invalid time format. Please use HH:MM.")
+
+def format_time(minutes):
+    hours = minutes // 60
+    mins = minutes % 60
+    return f"{hours:02}:{mins:02}"
+
  
 # Data Functions 
 def save_hikes(hikes):
@@ -49,14 +106,17 @@ def load_hikes():
             return json.load(file)
     except FileNotFoundError:
         return []
+    except json.JSONDecodeError:
+        print("Warning: hikes.json contains invalid data.")
+        return []
 
 # Hiking Functions
 def log_hike(hikes):
-    date = input("Date: ")
+    date = get_date("Date (YYYY-MM-DD): ")
     trail = input("Trail name: ")
     distance = get_float("Distance (miles): ")
     elevation_gain = get_int("Elevation gain (feet): ")
-    total_time = get_int("Total time (minutes): ")
+    total_time = get_time("Total time (HH:MM): ")
     pack_weight = get_float("Pack weight (lbs): ")
 
     hike = {
@@ -112,12 +172,12 @@ def edit_hike(hikes):
     if 0 <= index < len(hikes):
         hike = hikes[index]
         print(f"Editing hike: {hike['trail']} - {hike['date']}")
-        
-        date = input(f"Date ({hike['date']}): ") or hike['date']
+
+        date = get_optional_date(f"Date ({hike['date']}): ", hike['date'])
         trail = input(f"Trail name ({hike['trail']}): ") or hike['trail']
         distance = get_optional_float(f"Distance (miles) ({hike['distance']}): ", hike['distance'])
         elevation_gain = get_optional_int(f"Elevation gain (feet) ({hike['elevation_gain']}): ", hike['elevation_gain'])
-        total_time = get_optional_int(f"Total time (minutes) ({hike['total_time']}): ", hike['total_time'])
+        total_time = get_optional_time(f"Total time (HH:MM) ({format_time(hike['total_time'])}): ", hike["total_time"])       
         pack_weight = get_optional_float(f"Pack weight (lbs) ({hike['pack_weight']}): ", hike['pack_weight']    )
 
         hike.update({
@@ -152,7 +212,7 @@ def view_statistics(hikes):
     print(f"Total Hikes: {len(hikes)}")
     print(f"Total Distance: {total_distance:.2f} miles")
     print(f"Total Elevation Gain: {total_elevation_gain} feet")
-    print(f"Total Time: {total_time} minutes")
+    print(f"Total Time: {format_time(total_time)}")
     print(f"Average Distance: {average_distance:.2f} miles")
     print(f"Average Elevation Gain: {average_elevation_gain:.2f} feet")
     print(f"Average Time: {average_time:.2f} minutes")
