@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from storage import load_hikes, save_hikes
 from hikes import log_hike, view_hikes, delete_hike, edit_hike
-from statistics import view_statistics
+from hike_statistics import view_statistics
 
    
 # Main Program Loop

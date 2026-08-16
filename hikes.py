@@ -1,3 +1,4 @@
+# Imports
 from input_utils import (
     get_float, 
     get_int, 
@@ -25,6 +26,11 @@ from input_utils import (
     get_time, 
     get_optional_time, 
     format_time
+)
+
+from hike_statistics import (
+    calculate_pace,
+    format_pace
 )
 
 # Hiking Functions
@@ -58,8 +64,9 @@ def view_hikes(hikes):
     print("\nHIKING LOG")
     
     for index, hike in enumerate(hikes, start=1):
+        pace = calculate_pace(hike["total_time"], hike["distance"])
         print(
-            f"{index}. {hike['trail']} - {hike['date']} - {hike['distance']:.2f} miles"
+            f"{index}. {hike['trail']} - {hike['date']} - {hike['distance']:.2f} miles - {format_pace(pace)} / mile"
         )
 
 def delete_hike(hikes):
