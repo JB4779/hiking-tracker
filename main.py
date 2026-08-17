@@ -9,7 +9,8 @@ from hikes import (
 )
 from hike_statistics import (
     view_statistics,
-    view_monthly_statistics
+    view_monthly_statistics,
+    view_yearly_statistics
 )
    
 # Main Program Loop
@@ -23,9 +24,10 @@ def main():
         print("3. View hike details")
         print("4. View all-time statistics")
         print("5. View monthly statistics")
-        print("6. Edit a hike")
-        print("7. Delete a hike")
-        print("8. Exit")    
+        print("6. View yearly statistics")
+        print("7. Edit a hike")
+        print("8. Delete a hike")
+        print("9. Exit")    
 
         choice = input("\nChoose an option: ")
 
@@ -40,14 +42,16 @@ def main():
         elif choice == "5":
             view_monthly_statistics(hikes)
         elif choice == "6":
+            view_yearly_statistics(hikes)
+        elif choice == "7":
             edit_hike(hikes)
-        elif choice == "7":     
+        elif choice == "8":     
             delete_hike(hikes)
-        elif choice == "8":
+        elif choice == "9":
             print("Goodbye!")
             break
         else:
-            print("Invalid option. Please choose 1-8.") 
+            print("Invalid option. Please choose 1-9.") 
 
 
 if __name__ == "__main__":

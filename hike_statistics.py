@@ -8,17 +8,7 @@ def view_statistics(hikes):
         return
     
     stats = calculate_statistics(hikes) 
-
-    print(f"Total Hikes: {stats['total_hikes']}")
-    print(f"Total Distance: {stats['total_distance']:.2f} miles")
-    print(f"Total Elevation Gain: {stats['total_elevation_gain']} feet")
-    print(f"Total Time: {format_time(stats['total_time'])}")
-    print(f"Average Distance: {stats['average_distance']:.2f} miles")
-    print(f"Average Pace: {format_pace(stats['average_pace'])} / mile")
-    print(f"Average Elevation Gain: {stats['average_elevation_gain']:.2f} feet")
-    print(f"Average Time: {stats['average_time']:.2f} minutes")
-    print(f"Longest Hike: {stats['longest_hike']['trail']} - {stats['longest_hike']['distance']:.2f} miles")
-    print(f"Shortest Hike: {stats['shortest_hike']['trail']} - {stats['shortest_hike']['distance']:.2f} miles")
+    print_statistics(stats, "ALL-TIME STATISTICS")
 
 
 def view_monthly_statistics(hikes):
@@ -37,16 +27,20 @@ def view_monthly_statistics(hikes):
         return
     
     stats = calculate_statistics(monthly_hikes)
+    print_statistics(stats, f"{month_name.upper()} {year} STATISTICS")
 
-    print(f"\n{month_name.upper()} {year} STATISTICS")
-    print(f"Total Hikes: {stats['total_hikes']}")
-    print(f"Total Distance: {stats['total_distance']:.2f} miles")
-    print(f"Total Elevation Gain: {stats['total_elevation_gain']} feet")
-    print(f"Total Time: {format_time(stats['total_time'])}")
-    print(f"Average Distance: {stats['average_distance']:.2f} miles")
-    print(f"Average Pace: {format_pace(stats['average_pace'])} / mile")
-    print(f"Longest Hike: {stats['longest_hike']['trail']} - {stats['longest_hike']['distance']:.2f} miles")
-    print(f"Shortest Hike: {stats['shortest_hike']['trail']} - {stats['shortest_hike']['distance']:.2f} miles")
+
+def view_yearly_statistics(hikes):
+    year = get_int("Enter year (YYYY): ")
+
+    yearly_hikes = get_hikes_for_year(hikes, year)
+
+    if not yearly_hikes:
+        print(f"No hikes logged for {year}.")
+        return
+    
+    stats = calculate_statistics(yearly_hikes)
+    print_statistics(stats, f"{year} STATISTICS")
 
 
 def calculate_statistics(hikes):
@@ -102,3 +96,31 @@ def get_hikes_for_month(hikes, year, month):
             monthly_hikes.append(hike)
 
     return monthly_hikes
+
+
+def get_hikes_for_year(hikes, year):
+    yearly_hikes = []
+
+    for hike in hikes:
+        hike_date = datetime.strptime(hike["date"], "%Y-%m-%d")
+        if hike_date.year == year:
+            yearly_hikes.append(hike)
+
+    return yearly_hikes
+
+def print_statistics(stats, title):
+    print(f"\n{title}")
+    print(f"Total Hikes: {stats['total_hikes']}")
+    print(f"Total Distance: {stats['total_distance']:.2f} miles")
+    print(f"Total Elevation Gain: {stats['total_elevation_gain']} feet")
+    print(f"Total Time: {format_time(stats['total_time'])}")
+    print(f"Average Distance: {stats['average_distance']:.2f} miles")
+    print(f"Average Pace: {format_pace(stats['average_pace'])} / mile")
+    print(
+        f"Longest Hike: {stats['longest_hike']['trail']} - "
+        f"{stats['longest_hike']['distance']:.2f} miles"
+    )
+    print(
+        f"Shortest Hike: {stats['shortest_hike']['trail']} - "
+        f"{stats['shortest_hike']['distance']:.2f} miles"
+    )

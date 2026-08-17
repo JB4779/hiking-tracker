@@ -25,10 +25,10 @@ from hike_statistics import (
 def log_hike(hikes):
     date = get_date("Date (YYYY-MM-DD): ")
     trail = input("Trail name: ")
-    distance = get_float("Distance (miles): ")
-    elevation_gain = get_int("Elevation gain (feet): ")
+    distance = get_float("Distance (miles): ", minimum=0)
+    elevation_gain = get_int("Elevation gain (feet): ", minimum=0)
     total_time = get_time("Total time (HH:MM): ")
-    pack_weight = get_float("Pack weight (lbs): ")
+    pack_weight = get_float("Pack weight (lbs): ", minimum=0)
 
     hike = {
         "date": date,
@@ -63,7 +63,7 @@ def view_hike_details(hikes):
         return
     
     view_hikes(hikes)
-    index = get_int("Enter the number of the hike to view details: ") - 1
+    index = get_int("Enter the number of the hike to edit: ",minimum=1) - 1
 
     if 0 <= index < len(hikes):
         hike = hikes[index]
@@ -86,7 +86,7 @@ def delete_hike(hikes):
         return
     
     view_hikes(hikes)
-    index = get_int("Enter the number of the hike to delete: ") - 1
+    index = get_int("Enter the number of the hike to edit: ",minimum=1) - 1
 
     if 0 <= index < len(hikes):
         deleted_hike = hikes.pop(index)
@@ -102,7 +102,7 @@ def edit_hike(hikes):
         return
     
     view_hikes(hikes)
-    index = get_int("Enter the number of the hike to edit: ") - 1
+    index = get_int("Enter the number of the hike to edit: ",minimum=1) - 1
 
     if 0 <= index < len(hikes):
         hike = hikes[index]
@@ -110,10 +110,10 @@ def edit_hike(hikes):
 
         date = get_optional_date(f"Date ({hike['date']}): ", hike['date'])
         trail = input(f"Trail name ({hike['trail']}): ") or hike['trail']
-        distance = get_optional_float(f"Distance (miles) ({hike['distance']}): ", hike['distance'])
-        elevation_gain = get_optional_int(f"Elevation gain (feet) ({hike['elevation_gain']}): ", hike['elevation_gain'])
+        distance = get_optional_float(f"Distance (miles) ({hike['distance']}): ", hike['distance'], minimum=0)
+        elevation_gain = get_optional_int(f"Elevation gain (feet) ({hike['elevation_gain']}): ", hike['elevation_gain'], minimum=0)
         total_time = get_optional_time(f"Total time (HH:MM) ({format_time(hike['total_time'])}): ", hike["total_time"])       
-        pack_weight = get_optional_float(f"Pack weight (lbs) ({hike['pack_weight']}): ", hike['pack_weight']    )
+        pack_weight = get_optional_float(f"Pack weight (lbs) ({hike['pack_weight']}): ", hike['pack_weight'], minimum=0)
 
         hike.update({
             "date": date,

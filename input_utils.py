@@ -1,37 +1,69 @@
 from datetime import datetime
 
 # Input Helper Functions
-def get_float(prompt):
+def get_float(prompt, minimum=None):
     while True:
         try:
-            return float(input(prompt))
+            value = float(input(prompt))
+
+            if minimum is not None and value < minimum:
+                print(f"Value must be at least {minimum}.")
+                continue
+
+            return value
+
         except ValueError:
             print("Invalid input. Please enter a number.")
 
-def get_optional_float(prompt, current_value):
+def get_optional_float(prompt, current_value, minimum=None):
     while True:
         user_input = input(prompt)
+
         if user_input == "":
             return current_value
+
         try:
-            return float(user_input)
+            value = float(user_input)
+
+            if minimum is not None and value < minimum:
+                print(f"Value must be at least {minimum}.")
+                continue
+
+            return value
+
         except ValueError:
             print("Invalid input. Please enter a number.")
 
-def get_int(prompt):
+def get_int(prompt, minimum=None):
     while True:
         try:
-            return int(input(prompt))
+            value = int(input(prompt))
+
+            if minimum is not None and value < minimum:
+                print(f"Value must be at least {minimum}.")
+                continue
+
+            return value
+
         except ValueError:
             print("Invalid input. Please enter an integer.")
 
-def get_optional_int(prompt, current_value):
+def get_optional_int(prompt, current_value, minimum=None):
     while True:
         user_input = input(prompt)
+
         if user_input == "":
             return current_value
+
         try:
-            return int(user_input)
+            value = int(user_input)
+
+            if minimum is not None and value < minimum:
+                print(f"Value must be at least {minimum}.")
+                continue
+
+            return value
+
         except ValueError:
             print("Invalid input. Please enter an integer.")
 
