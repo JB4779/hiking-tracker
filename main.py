@@ -1,9 +1,16 @@
-import json
-from datetime import datetime
-from storage import load_hikes, save_hikes
-from hikes import log_hike, view_hikes,view_hike_details, delete_hike, edit_hike
-from hike_statistics import view_statistics, view_monthly_statistics
-
+#Imports
+from storage import load_hikes
+from hikes import (
+    log_hike,
+    view_hikes,
+    view_hike_details,
+    delete_hike,
+    edit_hike
+)
+from hike_statistics import (
+    view_statistics,
+    view_monthly_statistics
+)
    
 # Main Program Loop
 def main():
@@ -36,9 +43,11 @@ def main():
             edit_hike(hikes)
         elif choice == "7":     
             delete_hike(hikes)
-        elif choice == "8":     
+        elif choice == "8":
             print("Goodbye!")
-            break   
+            break
+        else:
+            print("Invalid option. Please choose 1-8.") 
 
 
 if __name__ == "__main__":

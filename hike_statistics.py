@@ -1,5 +1,6 @@
-import hikes
-from input_utils import format_time
+from calendar import month_name
+
+from input_utils import format_time, get_int
 from datetime import datetime
 
 
@@ -30,8 +31,12 @@ def view_statistics(hikes):
     print(f"Shortest Hike: {shortest_hike['trail']} - {shortest_hike['distance']:.2f} miles")
 
 def view_monthly_statistics(hikes):
-    year = int(input("Enter year (YYYY): "))
-    month = int(input("Enter month (1-12): "))
+    year = get_int("Enter year (YYYY): ")
+    month = get_int("Enter month (1-12): ")
+    if month < 1 or month > 12:
+        print("Invalid month. Please enter a number from 1 to 12.")
+        return
+
     month_name = datetime(year, month, 1).strftime("%B")
 
     monthly_hikes = get_hikes_for_month(hikes, year, month)
@@ -48,7 +53,7 @@ def view_monthly_statistics(hikes):
     average_distance = total_distance / len(monthly_hikes)
  
 
-    print(f"\nMonthly Statistics for {month_name}/{year}:")
+    print(f"\n{month_name.upper()} {year} STATISTICS")
     print(f"Total Hikes: {len(monthly_hikes)}")
     print(f"Total Distance: {total_distance:.2f} miles")
     print(f"Total Elevation Gain: {total_elevation_gain} feet")
@@ -66,11 +71,11 @@ def calculate_pace(total_time, distance):
 def format_pace(pace):
     if pace == 0:
         return "0:00"
-    
-    hours = int(pace // 60)
-    minutes = int(pace % 60)
-    seconds = round((pace - minutes) * 60)
-    return f"{minutes}:{seconds:02}"
+
+    total_seconds = round(pace * 60)
+    minutes, seconds = divmod(total_seconds, 60)
+
+    return f"{minutes}:{seconds:02d}"
 
 def calculate_elevation_per_mile(total_elevation_gain, total_distance):
     if total_distance == 0:
