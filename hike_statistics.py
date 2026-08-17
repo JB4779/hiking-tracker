@@ -1,5 +1,3 @@
-from calendar import month_name
-
 from input_utils import format_time, get_int
 from datetime import datetime
 
@@ -11,7 +9,7 @@ def view_statistics(hikes):
     
     stats = calculate_statistics(hikes) 
 
-    print(f"Total Hikes: {len(hikes)}")
+    print(f"Total Hikes: {stats['total_hikes']}")
     print(f"Total Distance: {stats['total_distance']:.2f} miles")
     print(f"Total Elevation Gain: {stats['total_elevation_gain']} feet")
     print(f"Total Time: {format_time(stats['total_time'])}")
@@ -41,7 +39,7 @@ def view_monthly_statistics(hikes):
     stats = calculate_statistics(monthly_hikes)
 
     print(f"\n{month_name.upper()} {year} STATISTICS")
-    print(f"Total Hikes: {len(monthly_hikes)}")
+    print(f"Total Hikes: {stats['total_hikes']}")
     print(f"Total Distance: {stats['total_distance']:.2f} miles")
     print(f"Total Elevation Gain: {stats['total_elevation_gain']} feet")
     print(f"Total Time: {format_time(stats['total_time'])}")
@@ -52,6 +50,9 @@ def view_monthly_statistics(hikes):
 
 
 def calculate_statistics(hikes):
+    if not hikes:
+        return None
+    
     total_distance = sum(hike["distance"] for hike in hikes)
     total_elevation_gain = sum(hike["elevation_gain"] for hike in hikes)
     total_time = sum(hike["total_time"] for hike in hikes)
@@ -60,10 +61,10 @@ def calculate_statistics(hikes):
         "total_hikes": len(hikes),
         "total_distance": total_distance,
         "total_elevation_gain": total_elevation_gain,
-        "average_elevation_gain": total_elevation_gain / len(hikes) if hikes else 0,
+        "average_elevation_gain": total_elevation_gain / len(hikes),
         "total_time": total_time,
         "average_distance": total_distance / len(hikes),
-        "average_time": total_time / len(hikes) if hikes else 0,
+        "average_time": total_time / len(hikes),
         "average_pace": calculate_pace(total_time, total_distance),
         "longest_hike": max(hikes, key=lambda hike: hike["distance"]),
         "shortest_hike": min(hikes, key=lambda hike: hike["distance"]),
