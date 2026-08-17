@@ -12,21 +12,8 @@ from input_utils import (
 )
 
 from storage import (
-    load_hikes, 
     save_hikes
 )   
-
-from input_utils import (
-    get_float, 
-    get_int, 
-    get_optional_float, 
-    get_optional_int, 
-    get_date, 
-    get_optional_date, 
-    get_time, 
-    get_optional_time, 
-    format_time
-)
 
 from hike_statistics import (
     calculate_pace,
