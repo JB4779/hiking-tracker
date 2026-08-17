@@ -70,22 +70,29 @@ def get_optional_int(prompt, current_value, minimum=None):
 def get_date(prompt):
     while True:
         date_str = input(prompt)
+
         try:
             datetime.strptime(date_str, "%Y-%m-%d")
             return date_str
         except ValueError:
-            print("Invalid date format. Please use YYYY-MM-DD.")
+            if not is_valid_date_format(date_str):
+                print("Invalid date format. Please use YYYY-MM-DD.")
+            else:
+                print("Invalid date. Please enter a valid calendar date.")
 
 def get_optional_date(prompt, current_value):
     while True:
         date_str = input(prompt)
         if date_str == "":
             return current_value
-        try: 
+        try:
             datetime.strptime(date_str, "%Y-%m-%d")
             return date_str
         except ValueError:
-            print("Invalid date format. Please use YYYY-MM-DD.")
+            if not is_valid_date_format(date_str):
+                print("Invalid date format. Please use YYYY-MM-DD.")
+            else:
+                print("Invalid date. Please enter a valid calendar date.")
 
 def get_time(prompt):
     while True:
@@ -122,3 +129,21 @@ def format_time(minutes):
     hours = minutes // 60
     mins = minutes % 60
     return f"{hours:02}:{mins:02}"
+
+
+def is_valid_date_format(date_str):
+    parts = date_str.split("-")
+
+    if len(parts) != 3:
+        return False
+
+    year, month, day = parts
+
+    return (
+        len(year) == 4
+        and len(month) == 2
+        and len(day) == 2
+        and year.isdigit()
+        and month.isdigit()
+        and day.isdigit()
+    )
