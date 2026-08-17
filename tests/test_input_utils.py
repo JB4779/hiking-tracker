@@ -381,4 +381,58 @@ def test_get_optional_time_retries_invalid_time(monkeypatch, capsys):
 
     assert result == 135
     assert "Invalid time format. Please use HH:MM." in captured.out
+
+
+def test_get_float_retries_after_invalid_input(monkeypatch, capsys):
+    responses = iter(["abc", "5.25"])
+
+    monkeypatch.setattr(
+        "builtins.input",
+        lambda prompt: next(responses)
+    )
+
+    result = get_float("Distance: ")
+
+    captured = capsys.readouterr()
+
+    assert result == 5.25
+    assert "Invalid input. Please enter a number." in captured.out
+
+
+def test_get_optional_float_retries_after_invalid_input(monkeypatch, capsys):
+    responses = iter(["abc", "5.25"])
+
+    monkeypatch.setattr(
+        "builtins.input",
+        lambda prompt: next(responses)
+    )
+
+    result = get_optional_float(
+        "Distance: ",
+        current_value=3.0,
+    )
+
+    captured = capsys.readouterr()
+
+    assert result == 5.25
+    assert "Invalid input. Please enter a number." in captured.out
+
+
+def test_get_optional_int_retries_after_invalid_input(monkeypatch, capsys):
+    responses = iter(["abc", "500"])
+
+    monkeypatch.setattr(
+        "builtins.input",
+        lambda prompt: next(responses)
+    )
+
+    result = get_optional_int(
+        "Elevation: ",
+        current_value=300,
+    )
+
+    captured = capsys.readouterr()
+
+    assert result == 500
+    assert "Invalid input. Please enter an integer." in captured.out
     
