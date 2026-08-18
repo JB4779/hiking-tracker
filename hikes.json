@@ -30,5 +30,27 @@
         "elevation_gain": 132,
         "total_time": 48,
         "pack_weight": 5.5
+    },
+    {
+        "date": "2026-05-12",
+        "trail": "Morning walk at NIX-Camarillo-Trail-Loop",
+        "distance": 5.17,
+        "elevation_gain": 831,
+        "elevation_loss": 842,
+        "total_time": 131,
+        "moving_time": null,
+        "pack_weight": null,
+        "source": "alltrails"
+    },
+    {
+        "date": "2026-06-13",
+        "trail": "Morning walk at NIX Nature Center - North Loop",
+        "distance": 4.73,
+        "elevation_gain": 680,
+        "elevation_loss": 689,
+        "total_time": 122,
+        "moving_time": null,
+        "pack_weight": null,
+        "source": "alltrails"
     }
 ]

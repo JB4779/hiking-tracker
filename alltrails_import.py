@@ -1,8 +1,11 @@
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from math import radians, sin, cos, sqrt, atan2
+from pathlib import Path
+from storage import save_hikes
 
 NAMESPACE = {"gpx": "http://www.topografix.com/GPX/1/1"}
+IMPORT_FOLDER = Path("imports/alltrails")
 
 
 def parse_gpx_file(filepath):
@@ -153,47 +156,52 @@ def convert_gpx_to_hike(filepath):
     return hike
 
 
-if __name__ == "__main__":
-    filepath = "imports/alltrails/2026-06-13_nix_north_loop.gpx"
+def is_duplicate_hike(hike, hikes):
+    for existing_hike in hikes:
+        same_date = existing_hike["date"] == hike["date"]
+        same_trail = existing_hike["trail"] == hike["trail"]
+        same_distance = existing_hike["distance"] == hike["distance"]
 
-    hike = convert_gpx_to_hike(filepath)
+        if same_date and same_trail and same_distance:
+            return True
 
-    print(hike)
+    return False
 
 
+def import_alltrails_hikes(hikes):
+    gpx_files = list(IMPORT_FOLDER.glob("*.gpx"))
 
-# if __name__ == "__main__":
-#     root = parse_gpx_file(
-#         "imports/alltrails/2026-06-13_nix_north_loop.gpx"
-#     )
+    if not gpx_files:
+        print("No AllTrails GPX files found.")
+        return
 
-#     track_points = get_track_points(root)
-#     start_time, end_time = get_track_times(track_points)
-#     distance = calculate_distance(track_points)
-#     elevations = get_elevations(track_points)
+    imported = 0
+    skipped = 0
 
-#     raw_gain, raw_loss = calculate_elevation_change(elevations)
+    for filepath in gpx_files:
+        hike = convert_gpx_to_hike(filepath)
 
-#     print(get_activity_name(root))
-#     print(f"Track points: {len(track_points)}")
-#     print(f"Date: {get_activity_date(start_time)}")
-#     print(f"Total time: {calculate_total_time(start_time, end_time)} minutes")
-#     print(f"Distance: {distance:.2f} miles")
-#     print(f"Raw elevation gain: {raw_gain:.0f} feet")
-#     print(f"Raw elevation loss: {raw_loss:.0f} feet")
+        if is_duplicate_hike(hike, hikes):
+            print(
+                f"Skipped duplicate: "
+                f"{hike['trail']} - {hike['date']}"
+            )
+            skipped += 1
+            continue
 
-#     print("\nSmoothing comparison:")
+        hikes.append(hike)
+        imported += 1
 
-#     for window_size in [3, 5, 10, 15, 20, 30]:
-#         smoothed = smooth_elevations(
-#             elevations,
-#             window_size=window_size
-#         )
+        print(
+            f"Imported: "
+            f"{hike['trail']} - {hike['date']} - "
+            f"{hike['distance']:.2f} miles"
+        )
 
-#         gain, loss = calculate_elevation_change(smoothed)
+    if imported > 0:
+        save_hikes(hikes)
 
-#         print(
-#             f"Window {window_size:>2}: "
-#             f"Gain {gain:.0f} ft | "
-#             f"Loss {loss:.0f} ft"
-#         )
+    print("\nIMPORT COMPLETE")
+    print(f"Imported: {imported}")
+    print(f"Skipped duplicates: {skipped}")
+
