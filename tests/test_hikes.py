@@ -1,4 +1,11 @@
 import hikes
+from hikes import (
+    view_hikes,
+    view_hike_details,
+    delete_hike,
+    edit_hike,
+    log_hike,
+)
 
 def test_view_hikes(sample_hikes, capsys):
     hikes.view_hikes(sample_hikes)
@@ -275,4 +282,35 @@ def test_log_hike_calls_save(sample_hikes, monkeypatch):
     hikes.log_hike(sample_hikes)
 
     assert save_called["value"] is True
+
+
+def test_view_hike_details_with_moving_time(monkeypatch, capsys):
+    hikes = [
+        {
+            "date": "2026-06-13",
+            "trail": "NIX Nature Center - North Loop",
+            "distance": 4.73,
+            "elevation_gain": 680,
+            "total_time": 122,
+            "recorded_time": 122,
+            "moving_time": 105,
+            "stopped_time": 17,
+            "recording_gap_time": 0,
+            "pack_weight": None,
+        }
+    ]
+
+    monkeypatch.setattr("builtins.input", lambda _: "1")
+
+    view_hike_details(hikes)
+
+    output = capsys.readouterr().out
+
+    assert "Total Time: 02:02" in output
+    assert "Recorded Time: 02:02" in output
+    assert "Moving Time: 01:45" in output
+    assert "Stopped Time: 00:17" in output
+    assert "Recording Gap: 00:00" in output
+    assert "Elapsed Pace: 25:48 / mile" in output
+    assert "Moving Pace: 22:12 / mile" in output
     

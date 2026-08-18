@@ -6,9 +6,18 @@ from alltrails_import import (
     parse_gpx_file,
     get_activity_name,
     get_track_points,
+    get_track_segments,
     get_track_times,
     get_activity_date,
+    get_segment_times,
     calculate_total_time,
+    calculate_segment_distance,
+    calculate_total_distance,
+    calculate_total_elevation_change,
+    calculate_recorded_time,
+    calculate_recording_gap_time,
+    calculate_segment_moving_time,
+    calculate_total_moving_time,
     convert_gpx_to_hike,
     is_duplicate_hike,
     create_processed_filename
@@ -55,6 +64,24 @@ def test_calculate_elevation_change():
     assert round(loss) == 16   
 
 
+def test_calculate_segment_distance(sample_gpx_file):
+    root = parse_gpx_file(sample_gpx_file)
+    segments = get_track_segments(root)
+
+    distance = calculate_segment_distance(segments[0])
+
+    assert distance > 0
+
+
+def test_calculate_total_distance(sample_gpx_file):
+    root = parse_gpx_file(sample_gpx_file)
+    segments = get_track_segments(root)
+
+    distance = calculate_total_distance(segments)
+
+    assert distance > 0
+
+
 def test_parse_gpx_file(sample_gpx_file):
     root = parse_gpx_file(sample_gpx_file)
 
@@ -74,6 +101,14 @@ def test_get_track_points(sample_gpx_file):
     assert len(points) == 2
 
 
+def test_get_track_segments(sample_gpx_file):
+    root = parse_gpx_file(sample_gpx_file)
+
+    segments = get_track_segments(root)
+
+    assert len(segments) == 1
+
+
 def test_track_times(sample_gpx_file):
     root = parse_gpx_file(sample_gpx_file)
     points = get_track_points(root)
@@ -84,13 +119,22 @@ def test_track_times(sample_gpx_file):
     assert calculate_total_time(start, end) == 90
 
 
+def test_calculate_recording_gap_time():
+    assert calculate_recording_gap_time(50, 20) == 30
+
+
 def test_convert_gpx_to_hike(sample_gpx_file):
     hike = convert_gpx_to_hike(sample_gpx_file)
 
     assert hike["date"] == "2026-08-17"
     assert hike["trail"] == "Test Hike"
     assert hike["total_time"] == 90
-    assert hike["moving_time"] is None
+
+    assert hike["recorded_time"] == 90
+    assert hike["recording_gap_time"] == 0
+    assert hike["moving_time"] == 0
+    assert hike["stopped_time"] == 90
+
     assert hike["pack_weight"] is None
     assert hike["source"] == "alltrails"
 
@@ -517,3 +561,215 @@ def test_create_processed_filename():
     result = create_processed_filename(hike)
 
     assert result == "2026-04-19_odeys-hike.gpx"
+
+
+def test_total_distance_does_not_include_gap_between_segments(tmp_path):
+    gpx_content = """<?xml version="1.0"?>
+<gpx version="1.1"
+     xmlns="http://www.topografix.com/GPX/1/1">
+    <trk>
+        <trkseg>
+            <trkpt lat="33.6000" lon="-117.7000" />
+            <trkpt lat="33.6010" lon="-117.7000" />
+        </trkseg>
+
+        <trkseg>
+            <trkpt lat="34.0000" lon="-118.0000" />
+            <trkpt lat="34.0010" lon="-118.0000" />
+        </trkseg>
+    </trk>
+</gpx>
+"""
+
+    filepath = tmp_path / "two_segments.gpx"
+    filepath.write_text(gpx_content)
+
+    root = parse_gpx_file(filepath)
+    segments = get_track_segments(root)
+
+    distance = calculate_total_distance(segments)
+
+    assert len(segments) == 2
+    assert distance < 1
+
+
+def test_calculate_total_elevation_change(sample_gpx_file):
+    root = parse_gpx_file(sample_gpx_file)
+    segments = get_track_segments(root)
+
+    gain, loss = calculate_total_elevation_change(segments)
+
+    assert gain >= 0
+    assert loss >= 0
+
+
+def test_total_elevation_does_not_include_gap_between_segments(tmp_path):
+    gpx_content = """<?xml version="1.0"?>
+<gpx version="1.1"
+     xmlns="http://www.topografix.com/GPX/1/1">
+    <trk>
+        <trkseg>
+            <trkpt lat="33.6000" lon="-117.7000">
+                <ele>100</ele>
+            </trkpt>
+            <trkpt lat="33.6010" lon="-117.7000">
+                <ele>110</ele>
+            </trkpt>
+        </trkseg>
+
+        <trkseg>
+            <trkpt lat="34.0000" lon="-118.0000">
+                <ele>1000</ele>
+            </trkpt>
+            <trkpt lat="34.0010" lon="-118.0000">
+                <ele>1010</ele>
+            </trkpt>
+        </trkseg>
+    </trk>
+</gpx>
+"""
+
+    filepath = tmp_path / "two_segments_elevation.gpx"
+    filepath.write_text(gpx_content)
+
+    root = parse_gpx_file(filepath)
+    segments = get_track_segments(root)
+
+    gain, loss = calculate_total_elevation_change(segments)
+
+    assert len(segments) == 2
+    assert round(gain) < 100
+    assert round(loss) == 0
+
+
+def test_get_segment_times(sample_gpx_file):
+    root = parse_gpx_file(sample_gpx_file)
+    segments = get_track_segments(root)
+
+    start, end = get_segment_times(segments[0])
+
+    assert start < end
+
+
+def test_calculate_recorded_time(sample_gpx_file):
+    root = parse_gpx_file(sample_gpx_file)
+    segments = get_track_segments(root)
+
+    recorded_time = calculate_recorded_time(segments)
+
+    assert recorded_time == 90
+
+
+def test_recorded_time_excludes_gap_between_segments(tmp_path):
+    gpx_content = """<?xml version="1.0"?>
+<gpx version="1.1"
+     xmlns="http://www.topografix.com/GPX/1/1">
+    <trk>
+        <trkseg>
+            <trkpt lat="33.6000" lon="-117.7000">
+                <time>2026-08-17T10:00:00Z</time>
+            </trkpt>
+            <trkpt lat="33.6010" lon="-117.7000">
+                <time>2026-08-17T10:10:00Z</time>
+            </trkpt>
+        </trkseg>
+
+        <trkseg>
+            <trkpt lat="33.7000" lon="-117.8000">
+                <time>2026-08-17T10:40:00Z</time>
+            </trkpt>
+            <trkpt lat="33.7010" lon="-117.8000">
+                <time>2026-08-17T10:50:00Z</time>
+            </trkpt>
+        </trkseg>
+    </trk>
+</gpx>
+"""
+
+    filepath = tmp_path / "two_segments_time.gpx"
+    filepath.write_text(gpx_content)
+
+    root = parse_gpx_file(filepath)
+    segments = get_track_segments(root)
+
+    recorded_time = calculate_recorded_time(segments)
+
+    assert recorded_time == 20
+
+
+def test_calculate_segment_moving_time(tmp_path):
+    gpx_content = """<?xml version="1.0"?>
+<gpx version="1.1"
+     xmlns="http://www.topografix.com/GPX/1/1">
+    <trk>
+        <trkseg>
+            <trkpt lat="33.6000" lon="-117.7000">
+                <time>2026-08-17T10:00:00Z</time>
+            </trkpt>
+
+            <trkpt lat="33.6010" lon="-117.7000">
+                <time>2026-08-17T10:01:00Z</time>
+            </trkpt>
+
+            <trkpt lat="33.6010" lon="-117.7000">
+                <time>2026-08-17T10:02:00Z</time>
+            </trkpt>
+        </trkseg>
+    </trk>
+</gpx>
+"""
+
+    filepath = tmp_path / "moving_time.gpx"
+    filepath.write_text(gpx_content)
+
+    root = parse_gpx_file(filepath)
+    segments = get_track_segments(root)
+
+    moving, stopped = calculate_segment_moving_time(
+        segments[0]
+    )
+
+    assert moving == 60
+    assert stopped == 60
+
+
+def test_calculate_total_moving_time(tmp_path):
+    gpx_content = """<?xml version="1.0"?>
+<gpx version="1.1"
+     xmlns="http://www.topografix.com/GPX/1/1">
+    <trk>
+        <trkseg>
+            <trkpt lat="33.6000" lon="-117.7000">
+                <time>2026-08-17T10:00:00Z</time>
+            </trkpt>
+
+            <trkpt lat="33.6010" lon="-117.7000">
+                <time>2026-08-17T10:01:00Z</time>
+            </trkpt>
+        </trkseg>
+
+        <trkseg>
+            <trkpt lat="33.7000" lon="-117.8000">
+                <time>2026-08-17T10:30:00Z</time>
+            </trkpt>
+
+            <trkpt lat="33.7000" lon="-117.8000">
+                <time>2026-08-17T10:31:00Z</time>
+            </trkpt>
+        </trkseg>
+    </trk>
+</gpx>
+"""
+
+    filepath = tmp_path / "total_moving_time.gpx"
+    filepath.write_text(gpx_content)
+
+    root = parse_gpx_file(filepath)
+    segments = get_track_segments(root)
+
+    moving, stopped = calculate_total_moving_time(
+        segments
+    )
+
+    assert moving == 1
+    assert stopped == 1

@@ -51,15 +51,36 @@ def calculate_statistics(hikes):
     total_elevation_gain = sum(hike["elevation_gain"] for hike in hikes)
     total_time = sum(hike["total_time"] for hike in hikes)
 
+    hikes_with_moving_time = [
+        hike for hike in hikes
+        if hike.get("moving_time") is not None
+    ]
+
+    total_moving_time = sum(
+        hike["moving_time"]
+        for hike in hikes_with_moving_time
+    )
+
+    moving_distance = sum(
+        hike["distance"]
+        for hike in hikes_with_moving_time
+    )
+
     return {
         "total_hikes": len(hikes),
         "total_distance": total_distance,
         "total_elevation_gain": total_elevation_gain,
         "average_elevation_gain": total_elevation_gain / len(hikes),
         "total_time": total_time,
+        "total_moving_time": total_moving_time,
+        "moving_hike_count": len(hikes_with_moving_time),
         "average_distance": total_distance / len(hikes),
         "average_time": total_time / len(hikes),
         "average_pace": calculate_pace(total_time, total_distance),
+        "average_moving_pace": calculate_pace(
+            total_moving_time,
+            moving_distance,
+        ),
         "longest_hike": max(hikes, key=lambda hike: hike["distance"]),
         "shortest_hike": min(hikes, key=lambda hike: hike["distance"]),
     } 
@@ -115,7 +136,12 @@ def print_statistics(stats, title):
     print(f"Total Elevation Gain: {stats['total_elevation_gain']} feet")
     print(f"Total Time: {format_time(stats['total_time'])}")
     print(f"Average Distance: {stats['average_distance']:.2f} miles")
-    print(f"Average Pace: {format_pace(stats['average_pace'])} / mile")
+    print(f"Average Elapsed Pace: {format_pace(stats['average_pace'])} / mile")
+    if stats["moving_hike_count"] > 0:
+        print(
+            f"Average Moving Pace: "
+            f"{format_pace(stats['average_moving_pace'])} / mile"
+        )
     print(
         f"Longest Hike: {stats['longest_hike']['trail']} - "
         f"{stats['longest_hike']['distance']:.2f} miles"

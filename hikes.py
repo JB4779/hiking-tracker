@@ -63,20 +63,49 @@ def view_hike_details(hikes):
         return
     
     view_hikes(hikes)
-    index = get_int("Enter the number of the hike to edit: ",minimum=1) - 1
+    index = get_int("Enter the number of the hike to edit: ", minimum=1) - 1
 
     if 0 <= index < len(hikes):
         hike = hikes[index]
-        pace = calculate_pace(hike["total_time"], hike["distance"])
-        elevation_per_mile = calculate_elevation_per_mile(hike["elevation_gain"], hike["distance"])
+
+        pace = calculate_pace(
+            hike["total_time"],
+            hike["distance"]
+        )
+
+        moving_time = hike.get("moving_time")
+
+        if moving_time is not None:
+            moving_pace = calculate_pace(
+                moving_time,
+                hike["distance"]
+            )
+        else:
+            moving_pace = None
+
+        elevation_per_mile = calculate_elevation_per_mile(
+            hike["elevation_gain"],
+            hike["distance"]
+        )
+
         print(f"\nDetails for {hike['trail']} - {hike['date']}:")
         print(f"Distance: {hike['distance']:.2f} miles")
         print(f"Elevation Gain: {hike['elevation_gain']} feet")
         print(f"Elevation per Mile: {elevation_per_mile:.0f} feet/mile")
+
         print(f"Total Time: {format_time(hike['total_time'])}")
-        print(f"Pace: {format_pace(pace)} / mile")
-       
+        print(f"Recorded Time: {format_time(hike.get('recorded_time', hike['total_time']))}")
+        print(f"Moving Time: {format_time(hike.get('moving_time', 0))}")
+        print(f"Stopped Time: {format_time(hike.get('stopped_time', 0))}")
+        print(f"Recording Gap: {format_time(hike.get('recording_gap_time', 0))}")
+
+        print(f"Elapsed Pace: {format_pace(pace)} / mile")
+
+        if moving_pace is not None:
+            print(f"Moving Pace: {format_pace(moving_pace)} / mile")
+
         print(f"Pack Weight: {hike['pack_weight']} lbs")
+
     else:
         print("Invalid hike number.")
 
