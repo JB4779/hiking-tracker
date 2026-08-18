@@ -11,6 +11,7 @@ from alltrails_import import (
     calculate_total_time,
     convert_gpx_to_hike,
     is_duplicate_hike,
+    create_processed_filename
 )
 
 
@@ -132,10 +133,22 @@ def test_import_alltrails_hikes_no_files(
     monkeypatch,
     capsys,
 ):
+    pending = tmp_path / "pending"
+    processed = tmp_path / "processed"
+    failed = tmp_path / "failed"
+
+    pending.mkdir()
+    processed.mkdir()
+    failed.mkdir()
+
+    monkeypatch.setattr(alltrails_import, "PENDING_FOLDER", pending)
+    monkeypatch.setattr(alltrails_import, "PROCESSED_FOLDER", processed)
+    monkeypatch.setattr(alltrails_import, "FAILED_FOLDER", failed)
+
     monkeypatch.setattr(
         alltrails_import,
-        "IMPORT_FOLDER",
-        tmp_path,
+        "save_hikes",
+        lambda hikes: None,
     )
 
     alltrails_import.import_alltrails_hikes(sample_hikes)
@@ -203,9 +216,15 @@ def test_import_alltrails_hikes_imports_new_hike(
     assert len(sample_hikes) == 4
     assert sample_hikes[-1] == new_hike
     assert save_called["value"] is True
+
+    assert (
+        processed / "2026-09-01_imported-trail.gpx"
+    ).exists()
+
     assert "Imported: Imported Trail - 2026-09-01 - 7.50 miles" in captured.out
     assert "Imported: 1" in captured.out
     assert "Skipped duplicates: 0" in captured.out
+    assert "Failed: 0" in captured.out
 
 
 def test_import_alltrails_hikes_skips_duplicate(
@@ -254,9 +273,15 @@ def test_import_alltrails_hikes_skips_duplicate(
 
     assert len(sample_hikes) == 3
     assert save_called["value"] is False
+
+    assert (
+        processed / "2026-08-10_trail-a.gpx"
+    ).exists()
+
     assert "Skipped duplicate:" in captured.out
     assert "Imported: 0" in captured.out
     assert "Skipped duplicates: 1" in captured.out
+    assert "Failed: 0" in captured.out
 
 
 def test_import_alltrails_hikes_mixed_batch(
@@ -327,8 +352,18 @@ def test_import_alltrails_hikes_mixed_batch(
     assert len(sample_hikes) == 4
     assert sample_hikes[-1] == new_hike
     assert save_called["value"] is True
+
+    assert (
+        processed / "2026-08-10_trail-a.gpx"
+    ).exists()
+
+    assert (
+        processed / "2026-09-01_imported-trail.gpx"
+    ).exists()
+
     assert "Imported: 1" in captured.out
     assert "Skipped duplicates: 1" in captured.out
+    assert "Failed: 0" in captured.out
 
 
 def test_import_moves_new_file_to_processed(
@@ -378,7 +413,7 @@ def test_import_moves_new_file_to_processed(
     alltrails_import.import_alltrails_hikes(sample_hikes)
 
     assert not fake_gpx.exists()
-    assert (processed / "new_hike.gpx").exists()
+    assert (processed / "2026-09-01_imported-trail.gpx").exists()
     assert not (failed / "new_hike.gpx").exists()
 
 
@@ -420,7 +455,7 @@ def test_import_moves_duplicate_to_processed(
 
     assert len(sample_hikes) == 3
     assert not fake_gpx.exists()
-    assert (processed / "duplicate.gpx").exists()
+    assert (processed / "2026-08-10_trail-a.gpx").exists()
     assert not (failed / "duplicate.gpx").exists()
 
 
@@ -471,3 +506,14 @@ def test_import_moves_failed_file_to_failed(
 
     assert "Failed: broken.gpx - Invalid GPX file" in captured.out
     assert "Failed: 1" in captured.out
+
+
+def test_create_processed_filename():
+    hike = {
+        "date": "2026-04-19",
+        "trail": "Odey's Hike",
+    }
+
+    result = create_processed_filename(hike)
+
+    assert result == "2026-04-19_odeys-hike.gpx"

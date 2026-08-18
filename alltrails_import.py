@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 import shutil
+import re
 from datetime import datetime
 from math import radians, sin, cos, sqrt, atan2
 from pathlib import Path
@@ -198,7 +199,8 @@ def import_alltrails_hikes(hikes):
 
                 skipped += 1
 
-                destination = PROCESSED_FOLDER / filepath.name
+                processed_filename = create_processed_filename(hike)
+                destination = PROCESSED_FOLDER / processed_filename
                 shutil.move(filepath, destination)
 
                 continue
@@ -212,7 +214,8 @@ def import_alltrails_hikes(hikes):
                 f"{hike['distance']:.2f} miles"
             )
 
-            destination = PROCESSED_FOLDER / filepath.name
+            processed_filename = create_processed_filename(hike)
+            destination = PROCESSED_FOLDER / processed_filename 
             shutil.move(filepath, destination)
 
         except Exception as error:
@@ -238,4 +241,19 @@ def create_import_folders():
     PENDING_FOLDER.mkdir(parents=True, exist_ok=True)
     PROCESSED_FOLDER.mkdir(parents=True, exist_ok=True)
     FAILED_FOLDER.mkdir(parents=True, exist_ok=True)
+
+
+def create_processed_filename(hike):
+    trail_name = hike["trail"].lower()
+
+    # Remove apostrophes
+    trail_name = trail_name.replace("'", "")
+
+    # Replace other non-alphanumeric characters with dashes
+    trail_name = re.sub(r"[^a-z0-9]+", "-", trail_name)
+
+    # Remove leading/trailing dashes
+    trail_name = trail_name.strip("-")
+
+    return f"{hike['date']}_{trail_name}.gpx"
 
