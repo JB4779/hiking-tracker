@@ -152,14 +152,20 @@ def test_import_alltrails_hikes_imports_new_hike(
     monkeypatch,
     capsys,
 ):
-    fake_gpx = tmp_path / "new_hike.gpx"
+    pending = tmp_path / "pending"
+    processed = tmp_path / "processed"
+    failed = tmp_path / "failed"
+
+    pending.mkdir()
+    processed.mkdir()
+    failed.mkdir()
+
+    fake_gpx = pending / "new_hike.gpx"
     fake_gpx.write_text("<gpx></gpx>")
 
-    monkeypatch.setattr(
-        alltrails_import,
-        "IMPORT_FOLDER",
-        tmp_path,
-    )
+    monkeypatch.setattr(alltrails_import, "PENDING_FOLDER", pending)
+    monkeypatch.setattr(alltrails_import, "PROCESSED_FOLDER", processed)
+    monkeypatch.setattr(alltrails_import, "FAILED_FOLDER", failed)
 
     new_hike = {
         "date": "2026-09-01",
@@ -208,14 +214,20 @@ def test_import_alltrails_hikes_skips_duplicate(
     monkeypatch,
     capsys,
 ):
-    fake_gpx = tmp_path / "duplicate.gpx"
+    pending = tmp_path / "pending"
+    processed = tmp_path / "processed"
+    failed = tmp_path / "failed"
+
+    pending.mkdir()
+    processed.mkdir()
+    failed.mkdir()
+
+    fake_gpx = pending / "duplicate.gpx"
     fake_gpx.write_text("<gpx></gpx>")
 
-    monkeypatch.setattr(
-        alltrails_import,
-        "IMPORT_FOLDER",
-        tmp_path,
-    )
+    monkeypatch.setattr(alltrails_import, "PENDING_FOLDER", pending)
+    monkeypatch.setattr(alltrails_import, "PROCESSED_FOLDER", processed)
+    monkeypatch.setattr(alltrails_import, "FAILED_FOLDER", failed)
 
     duplicate_hike = sample_hikes[0].copy()
 
@@ -253,17 +265,23 @@ def test_import_alltrails_hikes_mixed_batch(
     monkeypatch,
     capsys,
 ):
-    duplicate_file = tmp_path / "duplicate.gpx"
-    new_file = tmp_path / "new.gpx"
+    pending = tmp_path / "pending"
+    processed = tmp_path / "processed"
+    failed = tmp_path / "failed"
+
+    pending.mkdir()
+    processed.mkdir()
+    failed.mkdir()
+
+    duplicate_file = pending / "duplicate.gpx"
+    new_file = pending / "new.gpx"
 
     duplicate_file.write_text("<gpx></gpx>")
     new_file.write_text("<gpx></gpx>")
 
-    monkeypatch.setattr(
-        alltrails_import,
-        "IMPORT_FOLDER",
-        tmp_path,
-    )
+    monkeypatch.setattr(alltrails_import, "PENDING_FOLDER", pending)
+    monkeypatch.setattr(alltrails_import, "PROCESSED_FOLDER", processed)
+    monkeypatch.setattr(alltrails_import, "FAILED_FOLDER", failed)
 
     duplicate_hike = sample_hikes[0].copy()
 
@@ -309,6 +327,147 @@ def test_import_alltrails_hikes_mixed_batch(
     assert len(sample_hikes) == 4
     assert sample_hikes[-1] == new_hike
     assert save_called["value"] is True
-
     assert "Imported: 1" in captured.out
     assert "Skipped duplicates: 1" in captured.out
+
+
+def test_import_moves_new_file_to_processed(
+    sample_hikes,
+    tmp_path,
+    monkeypatch,
+):
+    pending = tmp_path / "pending"
+    processed = tmp_path / "processed"
+    failed = tmp_path / "failed"
+
+    pending.mkdir()
+    processed.mkdir()
+    failed.mkdir()
+
+    fake_gpx = pending / "new_hike.gpx"
+    fake_gpx.write_text("<gpx></gpx>")
+
+    monkeypatch.setattr(alltrails_import, "PENDING_FOLDER", pending)
+    monkeypatch.setattr(alltrails_import, "PROCESSED_FOLDER", processed)
+    monkeypatch.setattr(alltrails_import, "FAILED_FOLDER", failed)
+
+    new_hike = {
+        "date": "2026-09-01",
+        "trail": "Imported Trail",
+        "distance": 7.5,
+        "elevation_gain": 900,
+        "elevation_loss": 850,
+        "total_time": 180,
+        "moving_time": None,
+        "pack_weight": None,
+        "source": "alltrails",
+    }
+
+    monkeypatch.setattr(
+        alltrails_import,
+        "convert_gpx_to_hike",
+        lambda filepath: new_hike,
+    )
+
+    monkeypatch.setattr(
+        alltrails_import,
+        "save_hikes",
+        lambda hikes: None,
+    )
+
+    alltrails_import.import_alltrails_hikes(sample_hikes)
+
+    assert not fake_gpx.exists()
+    assert (processed / "new_hike.gpx").exists()
+    assert not (failed / "new_hike.gpx").exists()
+
+
+def test_import_moves_duplicate_to_processed(
+    sample_hikes,
+    tmp_path,
+    monkeypatch,
+):
+    pending = tmp_path / "pending"
+    processed = tmp_path / "processed"
+    failed = tmp_path / "failed"
+
+    pending.mkdir()
+    processed.mkdir()
+    failed.mkdir()
+
+    fake_gpx = pending / "duplicate.gpx"
+    fake_gpx.write_text("<gpx></gpx>")
+
+    monkeypatch.setattr(alltrails_import, "PENDING_FOLDER", pending)
+    monkeypatch.setattr(alltrails_import, "PROCESSED_FOLDER", processed)
+    monkeypatch.setattr(alltrails_import, "FAILED_FOLDER", failed)
+
+    duplicate_hike = sample_hikes[0].copy()
+
+    monkeypatch.setattr(
+        alltrails_import,
+        "convert_gpx_to_hike",
+        lambda filepath: duplicate_hike,
+    )
+
+    monkeypatch.setattr(
+        alltrails_import,
+        "save_hikes",
+        lambda hikes: None,
+    )
+
+    alltrails_import.import_alltrails_hikes(sample_hikes)
+
+    assert len(sample_hikes) == 3
+    assert not fake_gpx.exists()
+    assert (processed / "duplicate.gpx").exists()
+    assert not (failed / "duplicate.gpx").exists()
+
+
+def test_import_moves_failed_file_to_failed(
+    sample_hikes,
+    tmp_path,
+    monkeypatch,
+    capsys,
+):
+    pending = tmp_path / "pending"
+    processed = tmp_path / "processed"
+    failed = tmp_path / "failed"
+
+    pending.mkdir()
+    processed.mkdir()
+    failed.mkdir()
+
+    fake_gpx = pending / "broken.gpx"
+    fake_gpx.write_text("bad gpx data")
+
+    monkeypatch.setattr(alltrails_import, "PENDING_FOLDER", pending)
+    monkeypatch.setattr(alltrails_import, "PROCESSED_FOLDER", processed)
+    monkeypatch.setattr(alltrails_import, "FAILED_FOLDER", failed)
+
+    def fake_convert(filepath):
+        raise ValueError("Invalid GPX file")
+
+    monkeypatch.setattr(
+        alltrails_import,
+        "convert_gpx_to_hike",
+        fake_convert,
+    )
+
+    monkeypatch.setattr(
+        alltrails_import,
+        "save_hikes",
+        lambda hikes: None,
+    )
+
+    alltrails_import.import_alltrails_hikes(sample_hikes)
+
+    captured = capsys.readouterr()
+
+    assert len(sample_hikes) == 3
+    assert not fake_gpx.exists()
+    assert not (processed / "broken.gpx").exists()
+    assert (failed / "broken.gpx").exists()
+
+    assert "Failed: broken.gpx - Invalid GPX file" in captured.out
+    assert "Failed: 1" in captured.out

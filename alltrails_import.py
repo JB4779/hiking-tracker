@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+import shutil
 from datetime import datetime
 from math import radians, sin, cos, sqrt, atan2
 from pathlib import Path
@@ -6,6 +7,10 @@ from storage import save_hikes
 
 NAMESPACE = {"gpx": "http://www.topografix.com/GPX/1/1"}
 IMPORT_FOLDER = Path("imports/alltrails")
+
+PENDING_FOLDER = IMPORT_FOLDER / "pending"
+PROCESSED_FOLDER = IMPORT_FOLDER / "processed"
+FAILED_FOLDER = IMPORT_FOLDER / "failed"
 
 
 def parse_gpx_file(filepath):
@@ -169,7 +174,9 @@ def is_duplicate_hike(hike, hikes):
 
 
 def import_alltrails_hikes(hikes):
-    gpx_files = list(IMPORT_FOLDER.glob("*.gpx"))
+    create_import_folders()
+
+    gpx_files = list(PENDING_FOLDER.glob("*.gpx"))
 
     if not gpx_files:
         print("No AllTrails GPX files found.")
@@ -177,26 +184,46 @@ def import_alltrails_hikes(hikes):
 
     imported = 0
     skipped = 0
+    failed = 0
 
     for filepath in gpx_files:
-        hike = convert_gpx_to_hike(filepath)
+        try:
+            hike = convert_gpx_to_hike(filepath)
 
-        if is_duplicate_hike(hike, hikes):
+            if is_duplicate_hike(hike, hikes):
+                print(
+                    f"Skipped duplicate: "
+                    f"{hike['trail']} - {hike['date']}"
+                )
+
+                skipped += 1
+
+                destination = PROCESSED_FOLDER / filepath.name
+                shutil.move(filepath, destination)
+
+                continue
+
+            hikes.append(hike)
+            imported += 1
+
             print(
-                f"Skipped duplicate: "
-                f"{hike['trail']} - {hike['date']}"
+                f"Imported: "
+                f"{hike['trail']} - {hike['date']} - "
+                f"{hike['distance']:.2f} miles"
             )
-            skipped += 1
-            continue
 
-        hikes.append(hike)
-        imported += 1
+            destination = PROCESSED_FOLDER / filepath.name
+            shutil.move(filepath, destination)
 
-        print(
-            f"Imported: "
-            f"{hike['trail']} - {hike['date']} - "
-            f"{hike['distance']:.2f} miles"
-        )
+        except Exception as error:
+            failed += 1
+
+            destination = FAILED_FOLDER / filepath.name
+            shutil.move(filepath, destination)
+
+            print(
+                f"Failed: {filepath.name} - {error}"
+            )
 
     if imported > 0:
         save_hikes(hikes)
@@ -204,4 +231,11 @@ def import_alltrails_hikes(hikes):
     print("\nIMPORT COMPLETE")
     print(f"Imported: {imported}")
     print(f"Skipped duplicates: {skipped}")
+    print(f"Failed: {failed}")
+
+
+def create_import_folders():
+    PENDING_FOLDER.mkdir(parents=True, exist_ok=True)
+    PROCESSED_FOLDER.mkdir(parents=True, exist_ok=True)
+    FAILED_FOLDER.mkdir(parents=True, exist_ok=True)
 
