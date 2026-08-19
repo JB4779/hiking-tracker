@@ -17,6 +17,16 @@ from hike_statistics import (
 
 from alltrails_import import import_alltrails_hikes
 
+from gear import (
+    add_gear,
+    view_gear,
+    view_gear_details,
+    edit_gear,
+    delete_gear,
+)
+
+from gear_storage import load_gear
+
 
 def hikes_menu(hikes):
     while True:
@@ -71,23 +81,37 @@ def statistics_menu(hikes):
             print("Invalid option. Please choose 0-3.")
 
 
-def gear_menu():
+def gear_menu(gear):
     while True:
         print("\nGEAR")
-        print("Gear module coming soon.")
+        print("1.  Add gear")
+        print("2.  View gear")
+        print("3.  View gear details")
+        print("4.  Edit gear")
         print("0.  Back")
 
         choice = input("\nChoose an option: ")
 
-        if choice == "0":
+        if choice == "1":
+            add_gear(gear)
+        elif choice == "2":
+            view_gear(gear)
+        elif choice == "3":
+            view_gear_details(gear)
+        elif choice == "4":
+            edit_gear(gear)
+        elif choice == "5":
+            delete_gear(gear)
+        elif choice == "0":
             break
         else:
-            print("Invalid option. Please choose 0.")
+            print("Invalid option. Please choose 0-5.")
 
 
 # Main Program Loop
 def main():
     hikes = load_hikes()
+    gear = load_gear()
 
     while True:
         print("\nHIKING TRACKER")
@@ -101,7 +125,7 @@ def main():
         if choice == "1":
             hikes_menu(hikes)
         elif choice == "2":
-            gear_menu()
+            gear_menu(gear)
         elif choice == "3":
             statistics_menu(hikes)
         elif choice == "0":

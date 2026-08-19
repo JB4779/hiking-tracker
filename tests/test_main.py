@@ -21,7 +21,7 @@ def test_statistics_menu_back(monkeypatch):
 def test_gear_menu_back(monkeypatch):
     monkeypatch.setattr("builtins.input", lambda _: "0")
 
-    gear_menu()
+    gear_menu([])
 
 
 def test_main_exit(monkeypatch, capsys):

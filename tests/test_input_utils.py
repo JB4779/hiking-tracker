@@ -4,9 +4,10 @@ from input_utils import (
     get_float,
     get_optional_int,
     get_optional_float,
+    get_optional_rating,
+    is_valid_date_format,
     get_date,
     get_optional_date,
-    is_valid_date_format,
     get_time,
     get_optional_time,
     format_time,
@@ -435,4 +436,37 @@ def test_get_optional_int_retries_after_invalid_input(monkeypatch, capsys):
 
     assert result == 500
     assert "Invalid input. Please enter an integer." in captured.out
+
+
+def test_get_optional_rating(monkeypatch):
+    monkeypatch.setattr(
+        "builtins.input",
+        lambda _: "4",
+    )
+
+    assert get_optional_rating("Rating: ") == 4
+
+
+def test_get_optional_rating_blank(monkeypatch):
+    monkeypatch.setattr(
+        "builtins.input",
+        lambda _: "",
+    )
+
+    assert get_optional_rating("Rating: ") is None
+
+
+def test_get_optional_rating_retries_invalid(monkeypatch):
+    responses = iter([
+        "7",
+        "bad",
+        "5",
+    ])
+
+    monkeypatch.setattr(
+        "builtins.input",
+        lambda _: next(responses),
+    )
+
+    assert get_optional_rating("Rating: ") == 5
     

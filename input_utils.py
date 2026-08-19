@@ -94,6 +94,26 @@ def get_optional_date(prompt, current_value):
             else:
                 print("Invalid date. Please enter a valid calendar date.")
 
+
+def get_optional_rating(prompt):
+    while True:
+        user_input = input(prompt)
+
+        if user_input == "":
+            return None
+
+        try:
+            rating = int(user_input)
+
+            if 1 <= rating <= 5:
+                return rating
+
+            print("Rating must be between 1 and 5.")
+
+        except ValueError:
+            print("Invalid input. Please enter 1-5 or press Enter to skip.")
+
+
 def get_time(prompt):
     while True:
         time_str = input(prompt)

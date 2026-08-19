@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "category": "Pack",
+        "subcategory": "Backpack",
+        "brand_model": "Zpacks ARC Haul Ultra 50L",
+        "weight_oz": 22.9,
+        "cost": 399.0,
+        "comfort": 4,
+        "durability": 4,
+        "ease_of_use": 4,
+        "protection_warmth": 4,
+        "owned": false,
+        "quantity_owned": 0,
+        "tested": false,
+        "status": "Researching",
+        "source_url": "https://zpacks.com/products/arc-haul-ultra-50l-backpack",
+        "notes": "50L / StormGrey / Medium Torso (19-23 in) / Standard straps / Xtra Large Belt"
+    }
+]
