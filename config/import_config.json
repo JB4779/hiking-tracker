@@ -1,0 +1,11 @@
+{
+  "alltrails": {
+    "enabled": true,
+    "folders": {
+      "pending": "imports/alltrails/pending",
+      "processed": "imports/alltrails/processed",
+      "failed": "imports/alltrails/failed"
+    },
+    "moving_speed_threshold_mph": 0.5
+  }
+}

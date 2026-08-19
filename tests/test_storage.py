@@ -47,7 +47,8 @@ def test_load_hikes_invalid_json(tmp_path, capsys):
     captured = capsys.readouterr()
 
     assert result == []
-    assert "Warning: hikes.json contains invalid data." in captured.out
+    assert "contains invalid data." in captured.out
+    assert "hikes.json" in captured.out
 
 
 def test_failed_save_preserves_existing_file(tmp_path):

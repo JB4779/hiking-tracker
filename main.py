@@ -1,4 +1,6 @@
 # Imports
+from config_loader import load_app_config
+
 from storage import load_hikes
 
 from hikes import (
@@ -27,6 +29,8 @@ from gear import (
 
 from gear_storage import load_gear
 
+APP_CONFIG = load_app_config()
+APP_NAME = APP_CONFIG["app_name"]
 
 def hikes_menu(hikes):
     while True:
@@ -114,7 +118,7 @@ def main():
     gear = load_gear()
 
     while True:
-        print("\nHIKING TRACKER")
+        print(f"\n{APP_NAME.upper()}")
         print("1.  Hikes")
         print("2.  Gear")
         print("3.  Statistics")

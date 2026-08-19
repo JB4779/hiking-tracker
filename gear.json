@@ -16,5 +16,23 @@
         "status": "Researching",
         "source_url": "https://zpacks.com/products/arc-haul-ultra-50l-backpack",
         "notes": "50L / StormGrey / Medium Torso (19-23 in) / Standard straps / Xtra Large Belt"
+    },
+    {
+        "id": 2,
+        "category": "Pack",
+        "subcategory": "Backpack",
+        "brand_model": "Hyperlite Southwest 55L",
+        "weight_oz": 29.3,
+        "cost": 420.0,
+        "comfort": 4,
+        "durability": 4,
+        "ease_of_use": 4,
+        "protection_warmth": 4,
+        "owned": false,
+        "quantity_owned": 0,
+        "tested": false,
+        "status": "Researching",
+        "source_url": "https://hyperlitemountaingear.com/products/southwest?variant=43946890592301",
+        "notes": "55L / Medium Torso (17\"-19\") Color White"
     }
 ]

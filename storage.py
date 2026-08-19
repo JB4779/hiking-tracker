@@ -1,8 +1,12 @@
 import json
 import os
+from pathlib import Path
+from config_loader import load_app_config
 
-DATA_FILE = "hikes.json"
-TEMP_FILE = "hikes.tmp"
+APP_CONFIG = load_app_config()
+
+DATA_FILE = Path(APP_CONFIG["data_files"]["hikes"])
+TEMP_FILE = DATA_FILE.with_suffix(".tmp")
 
 
 def save_hikes(hikes):
@@ -24,5 +28,5 @@ def load_hikes():
     except FileNotFoundError:
         return []
     except json.JSONDecodeError:
-        print("Warning: hikes.json contains invalid data.")
+        print(f"Warning: {DATA_FILE} contains invalid data.")
         return []

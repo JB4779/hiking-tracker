@@ -1,0 +1,112 @@
+{
+  "categories": {
+    "Pack": [
+      "Backpack",
+      "Pack Liner",
+      "Pack Cover",
+      "Accessory"
+    ],
+    "Shelter": [
+      "Tent",
+      "Tarp",
+      "Groundsheet",
+      "Stakes",
+      "Accessory"
+    ],
+    "Sleep System": [
+      "Sleeping Bag",
+      "Quilt",
+      "Sleeping Pad",
+      "Pillow",
+      "Accessory"
+    ],
+    "Clothing": [
+      "Base Layer",
+      "Mid Layer",
+      "Insulation",
+      "Rain Gear",
+      "Pants",
+      "Shorts",
+      "Shirt",
+      "Socks",
+      "Underwear",
+      "Gloves",
+      "Hat"
+    ],
+    "Footwear": [
+      "Trail Shoes",
+      "Boots",
+      "Camp Shoes",
+      "Gaiters",
+      "Insoles"
+    ],
+    "Water": [
+      "Filter",
+      "Bottle",
+      "Reservoir",
+      "Treatment",
+      "Accessory"
+    ],
+    "Cooking": [
+      "Stove",
+      "Pot",
+      "Fuel",
+      "Utensil",
+      "Accessory"
+    ],
+    "Navigation": [
+      "GPS",
+      "Map",
+      "Compass",
+      "Watch",
+      "Accessory"
+    ],
+    "Electronics": [
+      "Phone",
+      "Battery",
+      "Charger",
+      "Cable",
+      "Headlamp",
+      "Accessory"
+    ],
+    "Safety": [
+      "First Aid",
+      "Emergency",
+      "Repair",
+      "Bear Storage",
+      "Accessory"
+    ],
+    "Hygiene": [
+      "Toiletries",
+      "Towel",
+      "Bathroom",
+      "Accessory"
+    ],
+    "Miscellaneous": [
+      "Miscellaneous"
+    ]
+  },
+  "statuses": [
+    "Researching",
+    "Considering",
+    "Active",
+    "Retired",
+    "Rejected"
+  ],
+  "default_status": "Researching",
+  "scoring": {
+    "comfort_weight": 3.0,
+    "durability_weight": 2.0,
+    "ease_of_use_weight": 2.5,
+    "protection_warmth_weight": 1.5,
+    "weight_penalty": 0.08,
+    "cost_penalty": 0.01,
+    "tested_bonus": 4.0
+  },
+  "targets": {
+    "base_weight_lb": 17,
+    "stretch_base_weight_lb": 15,
+    "fully_loaded_cap_lb": 30,
+    "gear_budget": 3000
+  }
+}

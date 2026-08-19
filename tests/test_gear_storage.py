@@ -3,11 +3,18 @@ import gear_storage
 
 def test_save_and_load_gear(tmp_path, monkeypatch):
     test_file = tmp_path / "gear.json"
+    temp_file = tmp_path / "gear.tmp"
 
     monkeypatch.setattr(
         gear_storage,
         "GEAR_FILE",
         test_file,
+    )
+
+    monkeypatch.setattr(
+        gear_storage,
+        "TEMP_FILE",
+        temp_file,
     )
 
     gear = [

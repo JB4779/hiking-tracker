@@ -5,14 +5,28 @@ from datetime import datetime
 from math import radians, sin, cos, sqrt, atan2
 from pathlib import Path
 from storage import save_hikes
+from config_loader import load_import_config
 
 NAMESPACE = {"gpx": "http://www.topografix.com/GPX/1/1"}
-MOVING_SPEED_THRESHOLD = 0.5
-IMPORT_FOLDER = Path("imports/alltrails")
 
-PENDING_FOLDER = IMPORT_FOLDER / "pending"
-PROCESSED_FOLDER = IMPORT_FOLDER / "processed"
-FAILED_FOLDER = IMPORT_FOLDER / "failed"
+IMPORT_CONFIG = load_import_config()
+ALLTRAILS_CONFIG = IMPORT_CONFIG["alltrails"]
+
+MOVING_SPEED_THRESHOLD = (
+    ALLTRAILS_CONFIG["moving_speed_threshold_mph"]
+)
+
+PENDING_FOLDER = Path(
+    ALLTRAILS_CONFIG["folders"]["pending"]
+)
+
+PROCESSED_FOLDER = Path(
+    ALLTRAILS_CONFIG["folders"]["processed"]
+)
+
+FAILED_FOLDER = Path(
+    ALLTRAILS_CONFIG["folders"]["failed"]
+)
 
 
 def parse_gpx_file(filepath):

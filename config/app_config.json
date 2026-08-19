@@ -1,0 +1,20 @@
+{
+  "app_name": "Hiking Tracker",
+
+  "units": {
+    "distance": "miles",
+    "elevation": "feet",
+    "gear_weight": "ounces",
+    "pack_weight": "pounds",
+    "currency": "USD"
+  },
+
+  "data_files": {
+    "hikes": "hikes.json",
+    "gear": "gear.json"
+  },
+
+  "display": {
+    "time_format": "HH:MM"
+  }
+}

@@ -8,116 +8,13 @@ from input_utils import (
 
 from gear_storage import save_gear
 
-GEAR_CATEGORIES = [
-    "Pack",
-    "Shelter",
-    "Sleep System",
-    "Clothing",
-    "Footwear",
-    "Water",
-    "Cooking",
-    "Navigation",
-    "Electronics",
-    "Safety",
-    "Hygiene",
-    "Miscellaneous",
-]
+from config_loader import load_gear_config
 
-GEAR_SUBCATEGORIES = {
-    "Pack": [
-        "Backpack",
-        "Pack Liner",
-        "Pack Cover",
-        "Accessory",
-    ],
-    "Shelter": [
-        "Tent",
-        "Tarp",
-        "Groundsheet",
-        "Stakes",
-        "Accessory",
-    ],
-    "Sleep System": [
-        "Sleeping Bag",
-        "Quilt",
-        "Sleeping Pad",
-        "Pillow",
-        "Accessory",
-    ],
-    "Clothing": [
-        "Base Layer",
-        "Mid Layer",
-        "Insulation",
-        "Rain Gear",
-        "Pants",
-        "Shorts",
-        "Shirt",
-        "Socks",
-        "Underwear",
-        "Gloves",
-        "Hat",
-    ],
-    "Footwear": [
-        "Trail Shoes",
-        "Boots",
-        "Camp Shoes",
-        "Gaiters",
-        "Insoles",
-    ],
-    "Water": [
-        "Filter",
-        "Bottle",
-        "Reservoir",
-        "Treatment",
-        "Accessory",
-    ],
-    "Cooking": [
-        "Stove",
-        "Pot",
-        "Fuel",
-        "Utensil",
-        "Accessory",
-    ],
-    "Navigation": [
-        "GPS",
-        "Map",
-        "Compass",
-        "Watch",
-        "Accessory",
-    ],
-    "Electronics": [
-        "Phone",
-        "Battery",
-        "Charger",
-        "Cable",
-        "Headlamp",
-        "Accessory",
-    ],
-    "Safety": [
-        "First Aid",
-        "Emergency",
-        "Repair",
-        "Bear Storage",
-        "Accessory",
-    ],
-    "Hygiene": [
-        "Toiletries",
-        "Towel",
-        "Bathroom",
-        "Accessory",
-    ],
-    "Miscellaneous": [
-        "Miscellaneous",
-    ],
-}
-
-GEAR_STATUSES = [
-    "Researching",
-    "Considering",
-    "Active",
-    "Retired",
-    "Rejected",
-]
+GEAR_CONFIG = load_gear_config()
+DEFAULT_GEAR_STATUS = GEAR_CONFIG["default_status"]
+GEAR_SUBCATEGORIES = GEAR_CONFIG["categories"]
+GEAR_CATEGORIES = list(GEAR_SUBCATEGORIES.keys())
+GEAR_STATUSES = GEAR_CONFIG["statuses"]
 
 
 def select_category():
@@ -317,7 +214,7 @@ def create_gear_item(
     owned=False,
     quantity_owned=0,
     tested=False,
-    status="Researching",
+    status=DEFAULT_GEAR_STATUS,
     source_url="",
     notes="",
 ):
